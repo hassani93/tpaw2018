@@ -1,0 +1,24 @@
+td
+{
+border:1px solid black;
+}
+table
+{
+    border-collapse: collapse; 
+}
+
+h1{
+    text-align: center;
+}
+body
+{
+    background-color: silver 
+}
+table
+{
+    background-color: white
+}
+a:hover
+{
+    color: rgb(255, 191, 1)
+}
