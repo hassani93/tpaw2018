@@ -1,0 +1,23 @@
+<html>
+<head>
+         <title>Formulaire</title>
+        <meta charset="UTF-8">
+    <link rel="stylesheet" href="TP2.css">
+    <script type="text/javascript" src="TP2.js"></script>
+</head>
+<body>
+    <form action="">
+            <label for="Nom">Nom:</label><input type="text" id="Nom" name="Nom" minlength="5" maxlength="20"><br/>
+            <label for="Prenom">Prenom:</label><input type="text" id="Prenom" name="Prenom" minlength="5" maxlength="20"><br/>
+            <label for="Date">Date de naissance:</label><input type="date" id="Date" name="Date" placeholder="JJ/MM/AAAA"><br/>
+            <label for="Adresse">Adresse:</label><input type="text" id="Adresse" name="Adresse" minlength="5" maxlength="50"><br/>
+            <label for="Mail">Mail:</label><input type="email" name="Mail" id="Mail" minlength="5" maxlength="30"><br/>
+           
+           
+    <input type="button" value="Valider" onclick="validation()"><br/>
+    </form>
+
+
+<div id="resultat">
+        
+</body>

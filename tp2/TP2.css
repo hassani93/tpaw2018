@@ -1,0 +1,16 @@
+label
+
+{
+    width: 170px; 
+    display: inline-block ;
+}
+
+#error
+{
+    background-color: #f03232;
+    border: 5px solid pink;
+
+}
+
+
+
