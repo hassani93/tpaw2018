@@ -1,33 +1,155 @@
 <!doctype html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>TP5</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
-        <!-- Place favicon.ico in the root directory -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Méteo avec Vuejs</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon.png">
 
-        <style>
-          body{
-              background-color: #e9ebee;              
-              font-family: system, -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
-              font-size: 16px;
-              margin: 0 auto;
-              max-width: 800px;              
-          }
-        </style>
-        
-        <!-- Code à dé-commenter si besoin de fichier CSS ou JS -->
-        <!--<link rel="stylesheet" href="style.css">-->
-        <!--<script src="main.js"></script>-->
-    </head>
-    <body>        
-        <h1>TP5</h1>
-        <!-- Add your site or application content here -->
-        <p>Hello world! This is HTML5 Boilerplate.</p>
-        <img src="../galilee.png" alt="Logo Galilee"/>
-    </body>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/weather-icons.min.css">
+
+    <script src="js/libs/jquery-3.2.1.slim.min.js"></script>
+    <script src="js/libs/popper.min.js"></script>
+    <script src="js/libs/bootstrap.min.js"></script>
+    <script src="js/libs/vue.js"></script>
+    <script src="js/libs/vue-router.js"></script>
+
+    <script src="js/main.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- menu du haut de page -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Météo </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="index.html">Home
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <!-- fin : menu du haut de page -->
+
+        <h1>WebApp Météo avec Vuejs</h1>
+
+
+        <div id="weatherApp">
+
+            <!-- formulaire de saisie de ville -->
+            <form v-on:submit="addCity">
+                <div class="input-group">
+                    <input type="search" class="form-control" v-model="formCityName" placeholder="Search for..." aria-label="Search for..." autofocus
+                        required>
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">Go!</button>
+                    </span>
+                </div>
+                <small id="passwordHelpInline" class="text-muted">
+                    {{formCityName.length}} car.
+                </small>
+
+                <div class="alert alert-danger" role="alert" v-if='messageForm != ""'>
+                    {{messageForm}}
+                </div>                
+            </form>
+            <!-- fin: formulaire de saisie de ville -->
+
+            <hr/>
+
+            <!-- Listing des villes, boucle sur l'array : cityList -->
+            <h4>Liste des villes ({{cityList.length}})</h4>
+            <ul class="list-group">
+                <a v-for="city in cityList" v-bind:href="'#meteo/'+city.name" v-on:click="meteo(city)" class="list-group-item d-flex justify-content-between align-items-center">
+                    {{city.name}}
+                    <button v-on:click="remove(city)" class="btn btn-secondary btn-sm" title="Supprimer de la liste">&times;</button>
+                </a>
+            </ul>
+
+            <div class="alert alert-primary" role="alert" v-if="cityList.length==0">
+                Aucune ville de saisie!
+            </div>
+
+            <!-- fin : Listing des villes -->
+
+            <hr>
+
+
+            <!-- meteo de la ville selectionnée -->
+            <div v-if="cityWeatherLoading"> Chargement de la météo...</div>
+            <div v-if="cityWeather">
+                <!-- <h4>Météo pour {{cityWeather.name}}</h4>
+            <p>{{cityWeather.main.temp}}° {{cityWeather.weather[0].description}}</p>
+            <p>Nuage: {{cityWeather.clouds.all}} %</p>
+            <p>Vent: {{cityWeather.wind.speed}} km/h</p> -->
+
+                <div class="card" style="width: 18rem;" v-if="cityWeather">
+                        <div class="card-header">
+                            {{cityWeather.name}} @{{cityWheaterDate}}
+                        </div>
+                    <img class="card-img-top" v-bind:src="'https://maps.googleapis.com/maps/api/staticmap?markers='+cityWeather.coord.lat+','+cityWeather.coord.lon+'&zoom=5&size=400x300&scale=2&key=AIzaSyAkmvI9DazzG9p77IShsz_Di7-5Qn7zkcg'"
+                        alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i v-bind:class="'wi wi-owm-day-'+cityWeather.weather[0].id"></i>
+                            {{cityWeather.main.temp}}<i class="wi wi-celsius"></i>                            
+                        </h5>
+                        <p class="card-text">{{cityWeather.weather[0].description}}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="wi wi-cloud"></i> Nuage: {{cityWeather.clouds.all}}%                            
+                        </li>
+                        <li class="list-group-item">
+                            <i class="wi wi-humidity"></i> Humidité: {{cityWeather.main.humidity}}%                           
+                        </li>
+                        <li class="list-group-item">
+                            <i class="wi wi-windy"></i> Vent: {{cityWeather.wind.speed}} km/h
+                        </li>
+                        <li class="list-group-item">
+                            <i class="wi wi-sunrise"></i> Levé du soleil: {{cityWheaterSunrise}} 
+                            <!-- {{new Date(cityWeather.sys.sunrise * 1000).toTimeString()}} -->
+                        </li>
+                        <li class="list-group-item">
+                            <i class="wi wi-sunset"></i>Couché du soleil: {{cityWheaterSunset}}  
+                            <!-- {{new Date(cityWeather.sys.sunset * 1000).toTimeString()}} -->
+                        </li>
+                    </ul>
+                    <!-- <div class="card-body">
+                  <a href="#" class="card-link">Card link</a>
+                  <a href="#" class="card-link">Another link</a>
+                </div> -->
+                </div>
+            </div>
+            <hr>
+
+             <!-- Affichage de la variable 'message' présente dans l'application Vue  -->
+             <p class="badge badge-success" role="alert" v-if='message'>
+                {{message}}
+            </p>
+
+            <p class="badge badge-success" role="alert" v-if='loaded'>
+                Application chargée.
+            </p>
+
+        </div>
+
+
+    </div>
+</body>
+
 </html>
